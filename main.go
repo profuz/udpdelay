@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/enriquebris/goconcurrentqueue"
@@ -57,12 +58,19 @@ func write(output, outputInterface *string, delay float64) {
 
 // udpdelay -i 224.0.0.1:1234 [-i_interface 192.168.0.100] -o 224.0.0.3:1235 [-o_interface 192.168.1.200] -delay 20.240
 func main() {
-	input := flag.String("i", "", "a string")
-	inputInterface := flag.String("i_interface", "", "a string")
-	output := flag.String("o", "", "a string")
-	outputInterface := flag.String("o_interface", "", "a string")
-	delay := flag.Float64("delay", 20, "a float")
+	input := flag.String("i", "", "Input address and port (required)")
+	inputInterface := flag.String("i_interface", "", "Interface for input stream")
+	output := flag.String("o", "", "Output address and port (required)")
+	outputInterface := flag.String("o_interface", "", "Interface for output stream")
+	delay := flag.Float64("delay", 20, "Delay in seconds")
 	flag.Parse()
+
+	if *input == "" || *output == "" {
+		fmt.Println("Error: Missing required parameters")
+		fmt.Println("Usage:")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
 
 	go write(output, outputInterface, *delay)
 
